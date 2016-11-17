@@ -1,5 +1,6 @@
 __author__ = 'KEII2K'
 
+import datetime
 import time
 from tool.Reader import Reader
 from selenium.webdriver.common.by import By
@@ -11,24 +12,28 @@ from tool.Common import Common
 common = Common()
 
 
-def get_start_point(sheet):
-    # start point symbol
-    test_case_str = "TestNo."
-
-    for row in range(1, sheet.nrows):
-        for col in range(1, sheet.ncols):
-            cell = sheet.cell(row, col).value
-            if cell == test_case_str:
-                return [col, row]
-    return [0, 0]
+def page_has_loaded():
+    page_state = driver.execute_script('return document.readyState;')
+    return page_state == 'complete'
 
 
 # find element by ID or NAME
 def find_element_by_id(id):
-
     if id.startswith("%"):
-        pass
-    else :
+        page_has_loaded()
+        id = id[1:]
+        try:
+            return driver.find_elements_by_xpath("//*[contains(@id, '" + id + "')]")[0]
+        except:
+            try:
+                return driver.find_elements_by_xpath("//*[@contains(@name, '" + id + "')]")[0]
+            except:
+                driver.quit()
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                print("                               not find contain id : " + id)
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                return 0
+    else:
         try:
             element = WebDriverWait(driver, 3).until(
                 expected_conditions.presence_of_element_located((By.ID, id))
@@ -49,15 +54,12 @@ def find_element_by_id(id):
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 return 0
 
-def wait_page_on_load():
-    WebDriverWait(driver, 30).until(
-        driver.execute_script()
-    )
-
 
 def run_test_case(test_case):
-    print("TC_NAME : " + test_case[0])
+    TC_name = test_case[0]
+    SS_idx = 0
     # start point caster
+
     for case in test_case:
         # DB control
         # consol control
@@ -82,10 +84,19 @@ def run_test_case(test_case):
             element = find_element_by_id(result[1])
             element.send_keys(result[2])
         elif case.startswith("SS"):
-            driver.get_screenshot_as_file("screenShot/evidence01.png")
+            # set highlight
+            for elem in case.split(",")[1:]:
+                element = find_element_by_id(elem)
+                str_style = element.get_attribute("style") + " outline: #FF0000 dotted thick;"
+                driver.execute_script("arguments[0].setAttribute('style', '" + str_style + "');", element)
+            SS_idx += 1
+
+            exportDir = "./screenShot/" + TC_name + "/"
+            common.mkdirifexist(exportDir)
+            driver.get_screenshot_as_file(exportDir + '{0:03d}'.format(SS_idx) + ".png")
 
 
-wb = open_workbook("excel/TC_TEMPLETE_00.xlsx")
+wb = open_workbook("./excel/TC_TEMPLETE_00.xlsx")
 
 rd = Reader()
 list_test_case = rd.read_from_workbook(wb)
@@ -104,4 +115,5 @@ driver.close()
 # make test Case
 print("Test End")
 
-# TODO get evidence
+# TODO EVIDENSE MERGE
+# TODO DB CONTROL
