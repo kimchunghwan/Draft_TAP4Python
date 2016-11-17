@@ -1,11 +1,18 @@
 #use jpype
+str = "1,2,3,456,789,0"
+
 import os
-import jpype as jp
-classPath = os.pathsep.join("TestCode/testjpype.jar")
-print(jp.getDefaultJVMPath())
-jp.startJVM(jp.getDefaultJVMPath(), "-ea", "-Djava.class.path=%s" % classPath)
+
+os.system("set")
 
 
-j_class = jp.JClass("Testjpype")
-jc = j_class()
-j_class.main()
+
+# 자르기 기준
+division_idx = 3
+
+tmp = str.split(",")
+result = tmp[0:division_idx-1]
+result.append(str.replace( ",".join(tmp[0:division_idx-1]) , ""))
+print(result)
+
+

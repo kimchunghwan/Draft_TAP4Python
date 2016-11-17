@@ -1,7 +1,6 @@
 __author__ = 'KEII2K'
 
 import time
-
 from tool.Reader import Reader
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
@@ -10,6 +9,7 @@ from xlrd import open_workbook
 from tool.Common import Common
 
 common = Common()
+
 
 def get_start_point(sheet):
     # start point symbol
@@ -22,49 +22,41 @@ def get_start_point(sheet):
                 return [col, row]
     return [0, 0]
 
+
 # find element by ID or NAME
 def find_element_by_id(id):
-    try:
-        element = WebDriverWait(driver, 3).until(
-            expected_conditions.presence_of_element_located((By.ID, id))
-        )
-        return element
-    except:
 
+    if id.startswith("%"):
+        pass
+    else :
         try:
             element = WebDriverWait(driver, 3).until(
-                expected_conditions.presence_of_element_located((By.NAME, id))
+                expected_conditions.presence_of_element_located((By.ID, id))
             )
             return element
 
         except:
-            driver.quit()
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-            print("                               not find id : " + id)
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-            return 0
+            try:
+                element = WebDriverWait(driver, 3).until(
+                    expected_conditions.presence_of_element_located((By.NAME, id))
+                )
+                return element
 
-#
-# def seperate_bisect(str):
-#     tmp = str.split(",")
-#     result = tmp[0:1]
-#     result.append(str.replace((tmp[0] + ","), ""))
-#     return result
-#
-# def seperate_3quarter(str):
-#     tmp = str.split(",")
-#     result = tmp[0:2]
-#     result.append(str.replace((tmp[0] + "," + tmp[1] + ","), ""))
-#     return result
-#
-#
-# def seperate_quarter(str):
-#     tmp = str.split(",")
-#     result = tmp[0:3]
-#     result.append(str.replace((tmp[0] + "," + tmp[1] + "," + tmp[2] + ","), ""))
-#     return result
+            except:
+                driver.quit()
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                print("                               not find id : " + id)
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                return 0
+
+def wait_page_on_load():
+    WebDriverWait(driver, 30).until(
+        driver.execute_script()
+    )
+
 
 def run_test_case(test_case):
+    print("TC_NAME : " + test_case[0])
     # start point caster
     for case in test_case:
         # DB control
@@ -75,16 +67,18 @@ def run_test_case(test_case):
         if case.startswith("open"):
             driver.get(case.replace("open,", ""))
         elif case.startswith("delay"):
-            result = common.seperate_bisect(case)
+            result = common.seperate(case, 2)
             time.sleep(int(result[1]))
         elif case.startswith("click"):
-            element = find_element_by_id(case.replace("click,", ""))
+            result = common.seperate(case, 2)
+            element = find_element_by_id(result[1])
             if element == 0:
                 break
             element.click()
         elif case.startswith("input"):
             # seperate 3parts
-            result = common.seperate_3quarter(case)
+            result = common.seperate(case, 3)
+            print(result)
             element = find_element_by_id(result[1])
             element.send_keys(result[2])
         elif case.startswith("SS"):
@@ -95,23 +89,6 @@ wb = open_workbook("excel/TC_TEMPLETE_00.xlsx")
 
 rd = Reader()
 list_test_case = rd.read_from_workbook(wb)
-
-# list_test_case = []
-# # get script start point
-# for sheet in wb.sheets():
-#
-#     start_point = get_start_point(sheet)
-#     for idx_row in range(1, sheet.nrows):
-#         if idx_row <= start_point[0]:
-#             continue
-#         test_case = []
-#         for idx_col in range(1, sheet.ncols):
-#             if idx_col < start_point[1] - 1:
-#                 continue
-#             test_case.append(sheet.cell(idx_row, idx_col).value)
-#
-#         list_test_case.append(test_case)
-#         # get test case list
 
 # import selenium
 from selenium import webdriver
@@ -127,6 +104,4 @@ driver.close()
 # make test Case
 print("Test End")
 
-# TODO read commend list  by Excel
-# TODO run selenium
 # TODO get evidence
