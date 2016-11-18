@@ -25,6 +25,7 @@ class Excel:
         return [0, 0]
 
     def read_from_workbook(self, workbook):
+        self.list_test_case = []
 
         for sheet in workbook.sheets():
             start_point = self.get_start_point(sheet)
@@ -40,3 +41,4 @@ class Excel:
             self.list_test_case.append(test_case)
             # get test case list
         return self.list_test_case
+

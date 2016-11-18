@@ -1,5 +1,5 @@
-__author__ = 'KEII2K'
-
+import os
+import logging
 import glob
 import time
 from tool.Excel import Excel
@@ -10,19 +10,25 @@ from xlrd import open_workbook
 from tool.Common import Common
 from selenium import webdriver
 
+__author__ = 'KEII2K'
+
 common = Common()
 
 
 def page_has_loaded():
-    page_state = driver.execute_script('return document.readyState;')
-    return page_state == 'complete'
+    flg = 1
+    while flg:
+        page_state = driver.execute_script('return document.readyState;')
+        if page_state == 'complete':
+            flg = 0
+        time.sleep(1)
 
 
 # find element by ID or NAME
 def find_element_by_id(id):
     if id.startswith("%"):
-        while not page_has_loaded():
-            pass
+        # wait load
+        page_has_loaded()
 
         id = id[1:]
         try:
@@ -31,7 +37,6 @@ def find_element_by_id(id):
             try:
                 return driver.find_elements_by_xpath("//*[@contains(@name, '" + id + "')]")[0]
             except:
-                driver.quit()
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 print("                               not find contain id : " + id)
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -51,23 +56,23 @@ def find_element_by_id(id):
                 return element
 
             except:
-                driver.quit()
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 print("                               not find id : " + id)
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 return 0
 
 
-def run_test_case(test_case):
+def run_test_case(test_case, fileName):
     TC_name = test_case[0]
     SS_idx = 0
 
+    # check excute flg
+    if "@" != test_case[1]:
+        return
+
+    print("excute TestCase :" + str(test_case))
     # first case is tc_name second excute flg ohters case commend
     for case in test_case:
-
-        # check excute flg
-        if "@" == test_case[1]:
-            break
 
         # DB control
         # consol control
@@ -82,9 +87,10 @@ def run_test_case(test_case):
         elif case.startswith("click"):
             result = common.seperate(case, 2)
             element = find_element_by_id(result[1])
+
             if element == 0:
                 break
-            print("id:" + element.get_attribute("id"))
+
             element.click()
         elif case.startswith("input"):
             # seperate 3parts
@@ -100,7 +106,7 @@ def run_test_case(test_case):
                 driver.execute_script("arguments[0].setAttribute('style', '" + str_style + "');", element)
             SS_idx += 1
 
-            exportDir = "./screenShot/" + TC_name + "/"
+            exportDir = "./screenShot/" + fileName + "/" + TC_name + "/"
             common.mkdirifexist(exportDir)
             driver.get_screenshot_as_file(exportDir + '{0:03d}'.format(SS_idx) + ".png")
 
@@ -108,23 +114,35 @@ def run_test_case(test_case):
 # read testcase file
 xsfilelist = glob.glob("./testCase/*.xlsx")
 
+list_test_case = []
+
 for filePath in xsfilelist:
+    # get file name
+    fileName = os.path.basename(filePath)
+
+    # tempfile  skip
+    if fileName.startswith("~$"):
+        continue
+
+    print("read TC_file : " + filePath)
 
     wb = open_workbook(filePath)
 
     # read testcases
     excel = Excel()
+
     list_test_case = excel.read_from_workbook(wb)
 
     # load selenium
     driver = webdriver.Chrome()
+    driver.maximize_window()
 
     # run testcase
-
-    for test_case in list_test_case:
-        run_test_case(test_case)
+    for test_case in excel.read_from_workbook(wb):
+        run_test_case(test_case, fileName)
 
     driver.close()
+    time.sleep(3)
 
 # make test Case
 print("Test End")
