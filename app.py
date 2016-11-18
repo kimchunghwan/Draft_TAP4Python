@@ -1,13 +1,14 @@
 __author__ = 'KEII2K'
 
-import datetime
+import glob
 import time
-from tool.Reader import Reader
+from tool.Excel import Excel
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from xlrd import open_workbook
 from tool.Common import Common
+from selenium import webdriver
 
 common = Common()
 
@@ -20,7 +21,9 @@ def page_has_loaded():
 # find element by ID or NAME
 def find_element_by_id(id):
     if id.startswith("%"):
-        page_has_loaded()
+        while not page_has_loaded():
+            pass
+
         id = id[1:]
         try:
             return driver.find_elements_by_xpath("//*[contains(@id, '" + id + "')]")[0]
@@ -58,9 +61,14 @@ def find_element_by_id(id):
 def run_test_case(test_case):
     TC_name = test_case[0]
     SS_idx = 0
-    # start point caster
 
+    # first case is tc_name second excute flg ohters case commend
     for case in test_case:
+
+        # check excute flg
+        if "@" == test_case[1]:
+            break
+
         # DB control
         # consol control
         # selenium control
@@ -76,6 +84,7 @@ def run_test_case(test_case):
             element = find_element_by_id(result[1])
             if element == 0:
                 break
+            print("id:" + element.get_attribute("id"))
             element.click()
         elif case.startswith("input"):
             # seperate 3parts
@@ -96,21 +105,26 @@ def run_test_case(test_case):
             driver.get_screenshot_as_file(exportDir + '{0:03d}'.format(SS_idx) + ".png")
 
 
-wb = open_workbook("./excel/TC_TEMPLETE_00.xlsx")
+# read testcase file
+xsfilelist = glob.glob("./testCase/*.xlsx")
 
-rd = Reader()
-list_test_case = rd.read_from_workbook(wb)
+for filePath in xsfilelist:
 
-# import selenium
-from selenium import webdriver
+    wb = open_workbook(filePath)
 
-driver = webdriver.Chrome()
+    # read testcases
+    excel = Excel()
+    list_test_case = excel.read_from_workbook(wb)
 
-# run test case
-for test_case in list_test_case:
-    run_test_case(test_case)
-# first casename second excuteflg ohters case commend
-driver.close()
+    # load selenium
+    driver = webdriver.Chrome()
+
+    # run testcase
+
+    for test_case in list_test_case:
+        run_test_case(test_case)
+
+    driver.close()
 
 # make test Case
 print("Test End")
