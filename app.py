@@ -15,7 +15,7 @@ __author__ = 'KEII2K'
 common = Common()
 
 
-def page_has_loaded():
+def wait_for_load():
     flg = 1
     while flg:
         page_state = driver.execute_script('return document.readyState;')
@@ -28,7 +28,7 @@ def page_has_loaded():
 def find_element_by_id(id):
     if id.startswith("%"):
         # wait load
-        page_has_loaded()
+        wait_for_load()
 
         id = id[1:]
         try:
@@ -146,6 +146,5 @@ for filePath in xsfilelist:
 
 # make test Case
 print("Test End")
-
-# TODO EVIDENSE MERGE
+# TODO EVIDENSE MERGE -> makeEvidence.py
 # TODO DB CONTROL

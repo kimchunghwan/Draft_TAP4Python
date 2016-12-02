@@ -10,12 +10,14 @@ def main(inFile, outFile):
             print("file not exist")
 
         xlApp = client.Dispatch("Excel.Application")
+        xlApp.Visible = False
         books = xlApp.Workbooks.Open(inFile)
         books.ExportAsFixedFormat(0, outFile)
         books.Close()
         print("success")
     except:
         print("fail")
+
 
 if __name__ == "__main__":
     main(sys.argv[1], sys.argv[2])

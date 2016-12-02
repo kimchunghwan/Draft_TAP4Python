@@ -1,17 +1,23 @@
-import pypyodbc
+import pymssql
 
-connurl = "DRIVER={SQL Server};" \
-          "SERVER=192.168.1.200;" \
-          "PORT:64555;" \
-          "DATABASE=EISAN;" \
-          "UID=eisan;" \
-          "PWD=eisan$2016"
-
-conn = pypyodbc.connect(driver='{SQL Server Native Client 11.0}', server='192.168.1.200', port='64555',  database='EISAN', uid='eisan', pwd='eisan$2016')
-
+# MSSQL
+conn = pymssql.connect(host='localhost', user='root', password='eisan$2016', database='EISAN')
 cursor = conn.cursor()
-cursor.execute("select user_id, user_name from users")
+cursor.execute(
+    "select * from tap")
 rows = cursor.fetchall()
+
 for row in rows:
-    print (row.user_id, row.user_name)
-    print ("testMake well ")
+    print(str(row))
+
+
+# 디비 관련해서 테스트 툴에 필요한 기능은 아래와 같다.
+# 엑셀 -> 데이터 , 데이터 -> 엑셀로 변환하는 처리도 필요하겠지
+# truncate 혹은 테이블 초기화
+
+# insert
+# update
+# select
+# run sql
+# db diff
+# 그리고 필요한것이
