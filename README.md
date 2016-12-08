@@ -1,13 +1,13 @@
 TODO 
-> DB control 
-  1.DB evidence 
-  2.DB diff
-  3.DB DML
+#DB control 
+##DB evidence 
+##DB diff
+##DB DML
 
-> machine control 
+#machine control 
   1.set Time , Date
   
-> report 
+#report 
   1.test result merge 
   2.logging
 
