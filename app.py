@@ -14,7 +14,6 @@ __author__ = 'KEII2K'
 
 common = Common()
 
-
 def wait_for_load():
     flg = 1
     while flg:
@@ -22,7 +21,6 @@ def wait_for_load():
         if page_state == 'complete':
             flg = 0
         time.sleep(1)
-
 
 # find element by ID or NAME
 def find_element_by_id(id):
