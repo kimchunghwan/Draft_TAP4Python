@@ -1,0 +1,5 @@
+clickMenu : $("#portalTagContainer > li:nth-child(3)").click();
+test : 
+  test : 21123
+  test : 123
+alert : alert("test excute js "); 

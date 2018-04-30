@@ -14,6 +14,9 @@ class CaseRunner:
         self.driver = driver
         pass
 
+    def excuteJS(self, javascript):
+        self.driver.execute_script(javascript)
+
     def wait_for_load(self):
         flg = 1
         while flg:
@@ -59,7 +62,7 @@ class CaseRunner:
                     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Exception@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                     return 0
 
-    def run_test_case(self, test_case, fileName):
+    def run_test_case(self, test_case, fileName, customCMD):
         TC_name = test_case[0]
         SS_idx = 0
 
@@ -75,6 +78,9 @@ class CaseRunner:
             # consol control
             # selenium control
             # TODO wait for loading
+
+            if case in customCMD:
+                self.driver.execute_script(customCMD[case])
 
             if case.startswith("open"):
                 self.driver.get(case.replace("open,", ""))
