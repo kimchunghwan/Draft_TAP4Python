@@ -1,7 +1,7 @@
 from xlrd import open_workbook
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import win32com
+#import win32com
 import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions

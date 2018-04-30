@@ -17,7 +17,7 @@ xsfilelist = glob.glob("./testCase/*.xlsx")
 list_test_case = []
 
 # load selenium
-driver = webdriver.Chrome()
+driver = webdriver.Chrome("./chromedriver")
 driver.maximize_window()
 caseRunner = CaseRunner(driver)
 
