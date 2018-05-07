@@ -14,8 +14,14 @@ class CaseRunner:
         self.driver = driver
         pass
 
+    # excute script one or multi 
     def excuteJS(self, javascript):
-        self.driver.execute_script(javascript)
+        if isinstance(javascript, list):
+            for script in javascript:
+                self.driver.execute_script(script)
+                time.sleep(1)
+        else :  
+            self.driver.execute_script(javascript)        
 
     def wait_for_load(self):
         flg = 1
@@ -72,7 +78,7 @@ class CaseRunner:
 
         print("excute TestCase :" + str(test_case))
         # first case is tc_name second excute flg ohters case commend
-        for case in test_case:
+        for case in test_case[2:]:
 
             # DB control
             # consol control
@@ -80,16 +86,17 @@ class CaseRunner:
             # TODO wait for loading
 
             if case in customCMD:
-                self.driver.execute_script(customCMD[case])
+                self.excuteJS(customCMD[case])
+#                self.driver.execute_script(customCMD[case])
 
-            if case.startswith("open"):
+            if case.startswith("open,"):
                 self.driver.get(case.replace("open,", ""))
 
-            elif case.startswith("delay"):
+            elif case.startswith("delay,"):
                 result = self.common.seperate(case, 2)
                 time.sleep(int(result[1]))
 
-            elif case.startswith("click"):
+            elif case.startswith("click,"):
                 result = self.common.seperate(case, 2)
                 element = self.find_element_by_id(result[1])
 
@@ -98,7 +105,7 @@ class CaseRunner:
 
                 element.click()
 
-            elif case.startswith("input"):
+            elif case.startswith("input,"):
                 # seperate 3parts
                 result = self.common.seperate(case, 3)
                 print(result)

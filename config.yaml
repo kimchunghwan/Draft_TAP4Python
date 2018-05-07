@@ -1,0 +1,11 @@
+# target testcase for run 
+testcaseFiles : "./testCase/*.xlsx"
+# target script Yaml file 
+scriptCmdYaml : "./customCMD.yaml"
+# screenshot output path 
+screenShotPath: "./screenShot/"
+evidencePath: "./evidence/"
+# webdriver path 
+webdriverPath: "./chromedriver"
+# default delay millies 
+defaltDelay: 1000
