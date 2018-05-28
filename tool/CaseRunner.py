@@ -18,6 +18,7 @@ class CaseRunner:
     def excuteJS(self, javascript):
         if isinstance(javascript, list):
             for script in javascript:
+                self.wait_for_load()
                 self.driver.execute_script(script)
                 time.sleep(1)
         else :  
@@ -71,20 +72,22 @@ class CaseRunner:
     def run_test_case(self, test_case, fileName, customCMD):
         TC_name = test_case[0]
         SS_idx = 0
-
+            
         # check excute flg
         if "@" != test_case[1]:
             return
 
-        print("excute TestCase :" + str(test_case))
+        # print("excute TestCase :" + str(test_case))
         # first case is tc_name second excute flg ohters case commend
         for case in test_case[2:]:
 
+            print("excute start TestCase : " + str(case))
             # DB control
             # consol control
             # selenium control
             # TODO wait for loading
 
+            # run script if include in customCMD.yaml command
             if case in customCMD:
                 self.excuteJS(customCMD[case])
 #                self.driver.execute_script(customCMD[case])
@@ -95,11 +98,15 @@ class CaseRunner:
             elif case.startswith("delay,"):
                 result = self.common.seperate(case, 2)
                 time.sleep(int(result[1]))
-
+            
+            elif case.startswith("switchFrame,"):
+                result = self.common.seperate(case, 2)
+                elem = self.find_element_by_id(result[1])
+                self.driver.switch_to.frame(elem)
+                
             elif case.startswith("click,"):
                 result = self.common.seperate(case, 2)
                 element = self.find_element_by_id(result[1])
-
                 if element == 0:
                     break
 
@@ -123,3 +130,5 @@ class CaseRunner:
                 exportDir = "./screenShot/" + fileName + "/" + TC_name + "/"
                 self.common.mkdirifexist(exportDir)
                 self.driver.get_screenshot_as_file(exportDir + '{0:03d}'.format(SS_idx) + ".png")
+
+            print("excute end TestCase : " + str(case))

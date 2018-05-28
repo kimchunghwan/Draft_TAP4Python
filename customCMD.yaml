@@ -12,3 +12,4 @@ loginscript :
   # submit
   - $("#loginBtn").click();
 setJQuery : <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+selectTenMenu: $("#master00201_1 > div.grid-stack-item-content.ui-draggable-handle > div > div").click()
