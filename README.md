@@ -1,5 +1,3 @@
-test slack test slack 
-
 ### this app base on
     1. python 3.6
     2. anaconda package
