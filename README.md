@@ -9,21 +9,18 @@ test slack test slack
 #### `makeEvidence.py` is make evidenceFile from `./screenShot` folder 
 
 
-TODO list 
+## TODO list 
 
 ### DB control 
-
-------------------
-  DB evidence 
-  DB diff
-  DB DML
+1. DB evidence 
+1. DB diff
+1. DB DML
 
 ### machine control 
-  1.set Time , Date
-  
-### report 
-  1.test result merge 
-  2.logging
+1. set Time , Date
 
+### report 
+1. test result merge 
+1. logging
 
 ### install for windows
